@@ -1,0 +1,111 @@
+#!/usr/bin/env python
+# -*- coding: utf-8 -*-
+# Coder : Sutrisno Efendi <kangfend@gmail.com>
+# Special thanks to 5ynl0rd ;)
+
+import mechanize
+import os
+import re
+import StringIO
+import sys
+
+from ocr.pytesser import image_to_string as i2s
+from PIL import Image
+from pyquery import PyQuery
+
+
+def decaptcha(image):
+    """
+    Convert captcha image to string
+    """
+    gambar = Image.open(image)
+    img = gambar.load()
+    pix = gambar.size
+
+    for x in xrange(pix[0]):
+        for y in xrange(pix[1]):
+            if img[x, y][0] < 114:
+                img[x, y] = (0, 0, 0, 255)
+
+    for x in xrange(pix[0]):
+        for y in xrange(pix[1]):
+            if img[x, y][1] < 18:
+                img[x, y] = (0, 0, 0, 255)
+
+    for x in xrange(pix[0]):
+        for y in xrange(pix[1]):
+            if img[x, y][2] > 0:
+                img[x, y] = (255, 255, 255, 0)
+
+    huruf = i2s(gambar).replace(" ", "")
+    captcha = "".join(re.findall(r'([A-Z]+)', huruf))
+
+    return captcha
+
+
+def crack(md5):
+    browser = mechanize.Browser()
+    cookie_jar = mechanize.LWPCookieJar()
+    browser.set_cookiejar(cookie_jar)
+    browser.set_handle_refresh(mechanize._http.HTTPRefreshProcessor(), max_time=1)
+    browser.addheaders = [("User-Agent",
+                           "Mozilla/5.0 (X11; Linux i686) \
+                           AppleWebKit/537.36 (KHTML, like Gecko) \
+                           Chrome/34.0.1847.116 Safari/537.36")]
+    browser.open('http://www.hashkiller.co.uk/md5-decrypter.aspx')
+    query = PyQuery(browser.response().get_data())
+    captcha_url = query("#content1_imgCaptcha").attr("src")
+    browser.open('http://www.hashkiller.co.uk' + captcha_url)
+    image = StringIO.StringIO(browser.response().read())
+    browser.back()
+    captcha = decaptcha(image)
+
+    if len(captcha) != 6:
+        return False
+
+    browser.open('http://www.hashkiller.co.uk/md5-decrypter.aspx')
+    browser.select_form(nr=0)
+    browser.form['ctl00$content1$txtInput'] = md5
+    browser.form['ctl00$content1$txtCaptcha'] = captcha
+    browser.submit()
+    response = PyQuery(browser.response().read())
+    status = response('#content1_lblStatus').text()
+    result = response('#content1_lblResults .text-green').text()
+
+    return status, result
+
+
+def main():
+    if len(sys.argv) != 2:
+        print "[!] Usage: python %s [md5_hash]" % sys.argv[0]
+    elif len(sys.argv[1]) != 32:
+        print "[!] Your hash is not md5!"
+    else:
+        if os.name == "posix":
+            os.system("clear")
+        else:
+            os.system("cls")
+        sys.stdout.write("[+] Trying to crack your hash...")
+        sys.stdout.flush()
+
+        while True:
+            try:
+                cracking = crack(sys.argv[1])
+                if cracking:
+                    if 'CAPTCHA' in cracking[0]:
+                        continue
+                    elif 'Failed' in cracking[0]:
+                        print "\n[-] Result : Hash not found!"
+                    else:
+                        print "\n[+] Result : %s" % cracking[1]
+                else:
+                    continue
+            except mechanize.URLError:
+                print "\n[!] Please check your internet connection!"
+            except KeyboardInterrupt:
+                print "\b\b\n[!] Thanks for using this tool."
+            exit()
+
+
+if __name__ == '__main__':
+    main()
