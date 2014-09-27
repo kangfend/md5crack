@@ -13,8 +13,8 @@ Installation
 
     `sudo pip install https://github.com/kangfend/py-md5crack/archive/master.zip`
 
-Command
-=======
+###Command
+
 You can use this tool with this command `md5crack [hash]`
 
 example: `md5crack 4dd39f49f898c062283963c187532af8`
