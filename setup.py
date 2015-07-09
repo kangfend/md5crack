@@ -28,6 +28,6 @@ setup(
     author = 'Sutrisno Efendi',
     author_email = 'kangfend@gmail.com',
     packages = find_packages(),
-    install_requires = ['pyquery', 'mechanize', 'PIL'],
+    install_requires = ['pyquery', 'mechanize', 'Pillow'],
     scripts=['bin/md5crack'],
 )
