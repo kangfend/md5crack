@@ -74,10 +74,12 @@ def crack(md5, auto=True):
 
 
 if __name__ == '__main__':
-    parser = argparse.ArgumentParser(description='Crack md5hash over https://hashkiller.co.uk')
+    parser = argparse.ArgumentParser(
+        description='Crack md5hash over https://hashkiller.co.uk')
     parser.add_argument('md5', nargs='+', help='md5 hash')
     parser.add_argument('-m', '--manual-captcha', default=False,
-                        help='Manual captcha image.', action='store_true')
+                        help='Manual captcha image. (GUI only)',
+                        action='store_true')
     args = parser.parse_args()
     if args.md5:
         md5hash = args.md5[0]
