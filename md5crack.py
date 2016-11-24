@@ -107,8 +107,8 @@ if __name__ == '__main__':
             except KeyboardInterrupt:
                 print "\b\b[!] Thanks for using this tool."
                 exit()
-            except:
-                print "\b\b[-] Please check your internet connection."
+            except Exception as error:
+                print "\b\b[-] %s" % error.message
                 exit()
     else:
         parser.print_help()
