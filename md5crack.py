@@ -9,7 +9,6 @@ import cfscrape
 import os
 import requests
 import StringIO
-import sys
 
 from ocr import image_to_string
 from PIL import Image
@@ -50,7 +49,7 @@ def crack(md5, auto=True):
         captcha = filter(str.isalnum, captcha).upper()
     else:
         captcha_image.show()
-        captcha = raw_input("Input captcha: ")
+        captcha = raw_input("[+] Input captcha: ")
 
     if len(captcha) != 6:
         return False
@@ -89,8 +88,7 @@ if __name__ == '__main__':
             os.system("clear")
         else:
             os.system("cls")
-        sys.stdout.write("[+] Trying to crack your hash...")
-        sys.stdout.flush()
+        print "[+] Trying to crack your hash..."
 
         while True:
             try:
@@ -100,16 +98,17 @@ if __name__ == '__main__':
                     if 'CAPTCHA' in cracking[0]:
                         continue
                     elif 'Failed' in cracking[0]:
-                        print "\n[-] Result: Hash not found!"
+                        print "[-] Result: Hash not found!"
                     else:
-                        print "\n[+] Result: %s" % cracking[1]
+                        print "[+] Result: %s" % cracking[1]
                     exit()
                 else:
                     continue
             except KeyboardInterrupt:
-                print "\b\b\n[!] Thanks for using this tool."
+                print "\b\b[!] Thanks for using this tool."
                 exit()
-            except Exception as error:
-                print "\b\b\n[-] %s" % str(error)
+            except:
+                print "\b\b[-] Please check your internet connection."
+                exit()
     else:
         parser.print_help()
