@@ -64,7 +64,8 @@ def crack(md5, auto=True):
         '__VIEWSTATE': query("#__VIEWSTATE").attr("value"),
         '__EVENTVALIDATION': query("#__EVENTVALIDATION").attr("value"),
         '__ASYNCPOST': 'true',
-        'ctl00$content1$btnSubmit': 'Submit'
+        'ctl00$content1$btnSubmit': 'Submit',
+        query('#content1_pnlStatus input').attr('name'): query('#content1_pnlStatus input').attr('value')
     })
     response = PyQuery(response.content)
     status = response('#content1_lblStatus').text()
